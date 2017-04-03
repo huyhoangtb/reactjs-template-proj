@@ -5,10 +5,9 @@
 
 # testing
 /coverage
-.idea
+/.idea
 # production
 /build
-/public
 
 # misc
 .DS_Store
