@@ -10,7 +10,7 @@ const Configuration = {
             path: mediaRoot + "images",
         }
     },
-    defaultLogo: mediaRoot + "images/default/logo.png",
+    defaultLogo: mediaRoot + "images/default/lotus.png",
 }
 
 export default Configuration;

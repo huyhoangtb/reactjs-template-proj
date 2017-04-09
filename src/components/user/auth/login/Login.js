@@ -9,9 +9,8 @@ import AuthPanel from 'components/user/auth/AuthPanel';
 import RaisedButton from 'material-ui/RaisedButton';
 import {injectI18N, t1} from "i18n";
 import {connect} from 'react-redux';
-import {activeRegisterTab} from "components/user/auth/register/RegisterActions"
-import Register from "components/user/auth/register/Register";
-import {activeLoginTab} from './LoginActions';
+import {activeRegisterTab} from "components/user/auth/register/RegisterActions";
+import {activeLoginTab, loginSuccess} from './LoginActions';
 import Request from "common/network/http/Request";
 /**
  * Created by Peter Hoang Nguyen
@@ -32,14 +31,15 @@ class Login extends React.Component {
     }
 
     doLogin() {
-        let {loginForm} =this.props;
+        let {loginForm, dispatch} =this.props;
+        Request.get("/user/login", loginForm.values, )
+            .then(response => {
+                if(response.success) {
+                    localStorage.setItem(process.env.REACT_APP_USER_LOCAL_STORAGE_KEY, JSON.stringify(response.result));
+                    dispatch(loginSuccess(response.result));
+                }
 
-        let config = {
-            method: 'POST',
-            headers: { 'Content-Type':'application/x-www-form-urlencoded' },
-            body: `username=mahesh&password=m123`
-        }
-        Request.post("/api/login", loginForm.values)
+            });
     }
 
     render() {
@@ -62,8 +62,8 @@ class Login extends React.Component {
                         </a>
                     </div>
 
-                    <InputText fullWidth={true} name="j_username" label={ t1(intl, 'Username')}/>
-                    <InputText fullWidth={true} name="j_password" label={ t1(intl, 'Password')}/>
+                    <InputText fullWidth={true} name="lname" label={ t1(intl, 'Username')}/>
+                    <InputText fullWidth={true} name="pass" label={ t1(intl, 'Password')}/>
                     <div className="remember-me-panel ">
                         <CheckBox labelStyle={{color: "#9d9d9d"}}
                                   iconStyle={{fill: "#9d9d9d"}}
@@ -72,7 +72,8 @@ class Login extends React.Component {
 
                     <div className="ui-button-group clearfix center-block">
                         <div className="pull-left login-button-panel">
-                            <RaisedButton onClick={this.doLogin} label={t1(intl, "Đăng nhập")} className="button" primary={true}/>
+                            <RaisedButton onClick={this.doLogin} label={t1(intl, "Đăng nhập")} className="button"
+                                          primary={true}/>
                         </div>
                         <div className="pull-right">
                             <a className="forgot-password"> { t1(intl, 'Forgot password?') }</a>
@@ -106,10 +107,13 @@ Login.childContextTypes = {
     muiTheme: React.PropTypes.object.isRequired,
 };
 const populateStateToProps = (state) => {
+    let userInfo = state.user.info;
     return {
-        loginForm: state.form.login
+        loginForm: state.form.login,
+        userInfo:userInfo
     }
 };
+
 export default connect(populateStateToProps)(reduxForm({
     form: 'login',  // a unique identifier for this form
 })(injectI18N(Login)));

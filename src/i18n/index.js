@@ -86,20 +86,18 @@ class I18nUtils {
 
     injectIntl(T) {
         let a = injectIntl(T);
-        console.log(a);
         return a;
     }
 
     formatMessage(intl, id, type, properties) {
-        console.log('type');
-        console.log(type);
         if (!id) {
             throw new Error("key of message not found");
         }
         if (!type) {
             type = this.MESSAGES_NORMAL;
         }
-        let message = intl.formatMessage({...properties, id: id});
+        let message = id;
+        // let message = intl.formatMessage({...properties, id: id});
         if (message && !message.hasOwnProperty(id)) {
             this.processMissingKey(intl.locale, id);
             message = message.replace(/_/g, " ");

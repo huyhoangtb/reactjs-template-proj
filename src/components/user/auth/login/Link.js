@@ -5,9 +5,10 @@ import React from 'react';
 import LoginForm from 'components/user/auth/login/Login';
 import RegisterForm from 'components/user/auth/register/Register';
 import {injectI18N, t1} from "i18n";
-import Dialog from 'material-ui/Dialog';
 import {connect} from 'react-redux';
-import {activeLoginTab} from './LoginActions';
+import {activeLoginTab, openLoginDialog} from './LoginActions';
+import DialogNoHeader from 'components/forms/elements/custom-popup/DialogNoHeader';
+
 /**
  * Created by Peter Hoang Nguyen
  * Email: vntopmas@gmail.com
@@ -17,9 +18,7 @@ import {activeLoginTab} from './LoginActions';
 class LoginLink extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {open: false, isLoginTab : true};
         this.openLoginPopup = this.openLoginPopup.bind(this);
-        this.closeLoginPopup = this.closeLoginPopup.bind(this);
     }
 
     componentWillMount() {
@@ -28,39 +27,15 @@ class LoginLink extends React.Component {
     }
 
     openLoginPopup() {
-        this.setState({open: true});
-    }
-
-    closeLoginPopup() {
-        this.setState({open: false});
-    }
-    onActiveLoginTab() {
-        this.setState({isLoginTab: true});
-    }
-    onActiveRegisterTab() {
-        this.setState({isLoginTab: false});
+        let {dispatch} = this.props;
+        dispatch(openLoginDialog());
     }
 
     render() {
-        let {intl, isLoginTabActivated, dispatch} =this.props;
+        let {intl} = this.props;
         let label = t1(intl, "Login");
-
         return (
-            <div>
-                <a  href="#" onClick={this.openLoginPopup} alt={label}> {label}</a>
-                <Dialog
-                    bodyClassName="login-modal-content"
-                    modal={true}
-                    open={this.state.open}>
-                    <a className="close-popup" href="#" onClick={this.closeLoginPopup} alt={close}>
-                        <i className="fa fa-times" aria-hidden="true"></i>
-                    </a>
-                    {
-                        isLoginTabActivated ? <LoginForm/> : <RegisterForm/>
-
-                    }
-                </Dialog>
-            </div>
+            <a href="#" onClick={this.openLoginPopup} alt={label}> {label}</a>
         );
     }
 }
@@ -72,6 +47,7 @@ const populateStateToProps = (state) => {
         isLoginTabActivated: isLoginTabActivated
     }
 };
+
 LoginLink.childContextTypes = {
     muiTheme: React.PropTypes.object.isRequired,
 };

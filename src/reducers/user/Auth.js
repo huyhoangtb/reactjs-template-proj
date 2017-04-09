@@ -2,12 +2,20 @@
  * Created by Peter Hoang Nguyen on 3/17/2017.
  */
 
-import {LOGIN_ACTION, LOGOUT_ACTION, ACTIVE_LOGIN_TAB_ACTION} from "components/user/auth/login/LoginActions";
+import {
+    LOGIN_ACTION,
+    LOGOUT_ACTION,
+    ACTIVE_LOGIN_TAB_ACTION,
+    LOGIN_SUCCESS_ACTION,
+    OPEN_LOGIN_DIALOG,
+    CLOSE_LOGIN_DIALOG
+} from "components/user/auth/login/LoginActions";
 import {ACTIVE_REGISTER_TAB_ACTION} from "components/user/auth/register/RegisterActions";
 
 const userInitialState = {
-    playing: false,
-    isLoginTabActivated: true
+    isLoginTabActivated: true,
+    openLoginDialog: false,
+    info: {}
 };
 
 export const User = (state = userInitialState, action) => {
@@ -28,6 +36,13 @@ export const User = (state = userInitialState, action) => {
             }
             break;
 
+        case LOGIN_SUCCESS_ACTION:
+            newState = {
+                ...state,
+                info: action.userInfo
+            }
+            break;
+
         case LOGOUT_ACTION:
 
             newState = {
@@ -40,6 +55,18 @@ export const User = (state = userInitialState, action) => {
             newState = {
                 ...state,
                 isLoginTabActivated: false
+            }
+            break;
+        case OPEN_LOGIN_DIALOG:
+            newState = {
+                ...state,
+                openLoginDialog: action.openLoginDialog
+            }
+            break;
+        case CLOSE_LOGIN_DIALOG:
+            newState = {
+                ...state,
+                openLoginDialog: action.openLoginDialog
             }
             break;
         default:

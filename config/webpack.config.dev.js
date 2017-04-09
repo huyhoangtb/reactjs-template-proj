@@ -7,8 +7,9 @@ var CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 var InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 var WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 var getClientEnvironment = require('./env');
+var path = require('path');
 var paths = require('./paths');
-
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -77,7 +78,8 @@ module.exports = {
         alias: {
             // Support React Native Web
             // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-            'react-native': 'react-native-web'
+            'react-native': 'react-native-web',
+            "configs" : paths.configs
         },
         modulesDirectories: ['node_modules', paths.appSrc],
     },
@@ -156,7 +158,18 @@ module.exports = {
                 query: {
                     name: 'static/media/[name].[hash:8].[ext]'
                 }
-            }
+            },
+            {
+                test: /\.scss$/,
+                include: paths.appSrc,
+                exclude: /node_modules/,
+                loader: ExtractTextPlugin.extract('css-loader!sass-loader')
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: "url-loader?limit=10000&mimetype=application/font-woff"
+            },
+            {test: /\.(ttf|eot|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader"}
             // ** STOP ** Are you adding a new loader?
             // Remember to add the new extension(s) to the "url" loader exclusion list.
         ]
@@ -199,7 +212,9 @@ module.exports = {
         // to restart the development server for Webpack to discover it. This plugin
         // makes the discovery automatic so you don't have to restart.
         // See https://github.com/facebookincubator/create-react-app/issues/186
-        new WatchMissingNodeModulesPlugin(paths.appNodeModules)
+        new WatchMissingNodeModulesPlugin(paths.appNodeModules),
+
+        new ExtractTextPlugin('[hash].css', {allChunks: true, disable: false}),
     ],
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.

@@ -9,9 +9,9 @@ import AuthPanel from 'components/user/auth/AuthPanel';
 import RaisedButton from 'material-ui/RaisedButton';
 import {injectI18N, t1} from "i18n";
 import {connect} from 'react-redux';
-import Login from 'components/user/auth/login/Login';
 import {activeLoginTab} from 'components/user/auth/login/LoginActions';
-import {activeRegisterTab} from "components/user/auth/register/RegisterActions"
+import {activeRegisterTab} from "components/user/auth/register/RegisterActions";
+
 /**
  * Created by Peter Hoang Nguyen
  * Email: vntopmas@gmail.com
@@ -21,16 +21,27 @@ import {activeRegisterTab} from "components/user/auth/register/RegisterActions"
 class Register extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {};
+        this.doRegister = this.doRegister.bind(this);
     }
 
     componentWillMount() {
-        let {intl, isLoginTabActivated, dispatch} =this.props;
+        let {dispatch} =this.props;
         dispatch(activeRegisterTab())
     }
 
+
+    doRegister() {
+        let {registerForm} =this.props;
+        // let data = Object.assign({},registerForm.values, {submit : 1});
+        // Fetch.post("/user/register", data);
+        fetch("http://vlms.dev/user/register?submit=1&&name="+registerForm.values.name+"&pass="+registerForm.values.pass+"&mail="+registerForm.values.email )
+        // Request.post("/user/register", registerForm.values);
+        // Request.post("/user/login", loginForm.values)
+    }
+
     render() {
-        let {intl, isLoginTabActivated, dispatch} =this.props;
+        let {intl, dispatch} =this.props;
         return (
 
             <AuthPanel>
@@ -47,11 +58,11 @@ class Register extends React.Component {
                             { t1(intl, 'Register') }
                         </a>
                     </div>
-                    <InputText fullWidth={true} name="fullname" label={ t1(intl, 'fullname')}/>
+                    <InputText fullWidth={true} name="name" label={ t1(intl, 'fullname')}/>
 
                     <InputText fullWidth={true} name="email" label={ t1(intl, 'email')}/>
 
-                    <InputText fullWidth={true} name="password" label={ t1(intl, 'Password')}/>
+                    <InputText fullWidth={true} name="pass" label={ t1(intl, 'Password')}/>
 
                     <div className="terms-and-conditions clearfix">
                         <div className="pull-left">
@@ -69,7 +80,7 @@ class Register extends React.Component {
                     </div>
 
                     <div className="ui-button-group center-block">
-                        <RaisedButton label={t1(intl, "Register")} className="button" primary={true}/>
+                        <RaisedButton label={t1(intl, "Register")} onClick={this.doRegister} className="button" primary={true}/>
                     </div>
                     <div className="another-register-tools-panel">
                         <div className="header clearfix">
@@ -94,6 +105,12 @@ class Register extends React.Component {
     }
 }
 
+const populateStateToProps = (state) => {
+    return {
+        registerForm: state.form.register
+    }
+};
+
 Register.childContextTypes = {
     muiTheme: React.PropTypes.object.isRequired,
 };
@@ -102,4 +119,4 @@ Register = reduxForm({
     form: 'register',  // a unique identifier for this form
 })(injectI18N(Register))
 
-export default connect()(Register);
+export default connect(populateStateToProps)(Register);
